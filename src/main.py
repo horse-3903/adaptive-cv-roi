@@ -212,7 +212,7 @@ class AdaptiveROI:
             predict_dir = os.path.join(self.parent_dir, "predictions")
 
         predict_dir = Path(predict_dir).absolute().as_posix()
-        assert os.path.exists(predict_dir)
+        os.makedirs(predict_dir, exist_ok=True)
 
         model = YOLO(self.model_dir)
         cap = cv2.VideoCapture(self.video_dir)
