@@ -1,6 +1,6 @@
 names:
-- roi
-path: C:/Users/chong/Desktop/Coding/GitHub/adaptive-cv-roi/train-test
+  '0': roi
+path: C:\Users\chong\Desktop\Coding\GitHub\adaptive-cv-roi\train-test
 test: null
-train: ./train-test/train/
-val: ./train-test/validate/
+train: images\train
+val: images\val
