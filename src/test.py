@@ -28,7 +28,7 @@ def test_adaptive_roi(video_dir: str):
     
     # Step 4: Perform predictions on the video using the trained model and play/save video
     print("\n--- Running YOLO Predictions on Video ---")
-    adaptive_roi.predict_and_play_video(conf=0.01)
+    adaptive_roi.predict_and_play_video(conf=0.01, max_det=1)
 
 if __name__ == "__main__":
     # Define dirs

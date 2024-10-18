@@ -2,11 +2,14 @@ import os
 import shutil
 from pathlib import Path
 
+from util import create_dir_name
+
 import random
 import numpy as np
+
 import cv2
 from ultralytics import YOLO
-from ultralytics.models.yolo.detect import DetectionTrainer
+
 import yaml
 
 class AdaptiveROI:
@@ -15,16 +18,12 @@ class AdaptiveROI:
         assert os.path.exists(video_dir)
         self.video_dir = video_dir
         
-        all_dir = os.listdir(".")
-        prev_roi = [dir for dir in all_dir if "adaptive-roi-" in dir]
-        self.index = len(prev_roi)
+        self.index, self.parent_dir = create_dir_name(parent_dir=".", prefix="adaptive-roi")
 
-        if not parent_dir:
-            parent_dir = f"./adaptive-roi-{self.index}/"
-
-        parent_dir = Path(parent_dir).absolute().as_posix()
-        os.makedirs(parent_dir, exist_ok=True)
-        self.parent_dir = parent_dir + "/"
+        if not self.parent_dir:
+            parent_dir = Path(parent_dir).absolute().as_posix()
+            os.makedirs(parent_dir, exist_ok=True)
+            self.parent_dir = parent_dir + "/"
         
     def extract_data(self, n_frames: int = 15, raw_dir: str = None):
         """
@@ -181,19 +180,17 @@ class AdaptiveROI:
         if not model_dir:
             project_dir = os.path.join(self.parent_dir, "models")
             os.makedirs(project_dir, exist_ok=True)
-            all_dir = os.listdir(project_dir)
-            prev_roi = [dir for dir in all_dir if "model-" in dir]
-            model_index = len(prev_roi)
-            model_dir = os.path.join(self.parent_dir, f"models/model-{model_index:02d}/best.pt")
 
-        model_dir = Path(model_dir).absolute().as_posix()
-        save_dir = Path(model_dir).parent.absolute().as_posix() + "/"
-        self.model_dir = model_dir
+            model_index, model_dir = create_dir_name(project_dir, "model")
+            model_train_dir = os.path.join(self.parent_dir, model_dir, "run/")
+            model_save_dir = os.path.join(self.parent_dir, model_dir, "best.pt")
+
+        self.model_dir = model_save_dir
 
         model = YOLO(self.pre_train_dir)
         
         # Train the model on the annotated data
-        model.train(data=self.config_dir, epochs=epochs, imgsz=640, save=True, project=project_dir, name=f"model-{model_index:02d}")
+        model.train(data=self.config_dir, epochs=epochs, imgsz=640, save=True, project=model_dir, name=f"run")
 
         # Save the trained model
         model.save(self.model_dir)
@@ -225,8 +222,8 @@ class AdaptiveROI:
         # Define the codec and create VideoWriter object if save_dir is provided
         out = None
         os.makedirs(predict_dir, exist_ok=True)
-        predict_dir = os.path.join(predict_dir, "predictions.mp4")
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Codec for .mp4 format
+        predict_dir = os.path.join(predict_dir, "predictions.avi")
+        fourcc = cv2.VideoWriter_fourcc(*"XVID")  # Codec for .mp4 format
         out = cv2.VideoWriter(predict_dir, fourcc, fps, (width, height))
         print(f"Saving output video to: {predict_dir}")
 
