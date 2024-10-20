@@ -1,6 +1,0 @@
-names:
-  '0': roi
-path: C:/Users/chong/Desktop/Coding/GitHub/adaptive-cv-roi/adaptive-roi-0/
-test: images\test
-train: images\train
-val: images\val

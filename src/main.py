@@ -18,12 +18,22 @@ class AdaptiveROI:
         assert os.path.exists(video_dir)
         self.video_dir = video_dir
         
-        self.index, self.parent_dir = create_dir_name(parent_dir=".", prefix="adaptive-roi")
+        self.index, tmp_parent_dir = create_dir_name(parent_dir=".", prefix="adaptive-roi")
 
-        if not self.parent_dir:
+        if not parent_dir:
+            parent_dir = Path(tmp_parent_dir).absolute().as_posix()
+        else:
             parent_dir = Path(parent_dir).absolute().as_posix()
-            os.makedirs(parent_dir, exist_ok=True)
-            self.parent_dir = parent_dir + "/"
+
+        os.makedirs(parent_dir, exist_ok=True)
+        self.parent_dir = parent_dir + "/"
+
+    @staticmethod
+    def load_from_file():
+        pass
+
+    def save_to_file(self):
+        pass
         
     def extract_data(self, n_frames: int = 15, raw_dir: str = None):
         """
@@ -196,20 +206,23 @@ class AdaptiveROI:
         model.save(self.model_dir)
         print(f"Model saved at {self.model_dir}")
 
-    def predict_and_play_video(self, predict_dir: str=None, max_det=None, conf=0.5):
+    def predict_and_play_video(self, prediction_dir: str=None, max_det=None, conf=0.5):
         """
         Uses a trained YOLO model to predict objects in a video, displays the predictions, and optionally saves them as an MP4 video.
         
         Parameters:
-        - predict_dir: Directory where the output video will be saved (optional). If not provided, the video won't be saved.
+        - prediction_dir: Directory where the output video will be saved (optional). If not provided, the video won't be saved.
         - max_det: Maximum number of detections per frame.
         - conf: Confidence threshold for detections.
         """
-        if not predict_dir:
-            predict_dir = os.path.join(self.parent_dir, "predictions")
+        if not prediction_dir:
+            prediction_dir = os.path.join(self.parent_dir, "predictions")
+            os.makedirs(prediction_dir, exist_ok=True)
 
-        predict_dir = Path(predict_dir).absolute().as_posix()
-        os.makedirs(predict_dir, exist_ok=True)
+            video_index, video_dir = create_dir_name(prediction_dir, "predict", "avi")
+
+        prediction_dir = Path(prediction_dir).absolute().as_posix()
+        os.makedirs(prediction_dir, exist_ok=True)
 
         model = YOLO(self.model_dir)
         cap = cv2.VideoCapture(self.video_dir)
@@ -221,11 +234,11 @@ class AdaptiveROI:
 
         # Define the codec and create VideoWriter object if save_dir is provided
         out = None
-        os.makedirs(predict_dir, exist_ok=True)
-        predict_dir = os.path.join(predict_dir, "predictions.avi")
+
+        prediction_dir = os.path.join(prediction_dir, video_dir)
         fourcc = cv2.VideoWriter_fourcc(*"XVID")  # Codec for .mp4 format
-        out = cv2.VideoWriter(predict_dir, fourcc, fps, (width, height))
-        print(f"Saving output video to: {predict_dir}")
+        out = cv2.VideoWriter(prediction_dir, fourcc, fps, (width, height))
+        print(f"Saving output video to: {prediction_dir}")
 
         while cap.isOpened():
             ret, frame = cap.read()
@@ -236,7 +249,7 @@ class AdaptiveROI:
             annotated_frame = results[0].plot()
 
             # Display the frame with predictions
-            window_name = "YOLOv8 Predictions"
+            window_name = "YOLOv11 Predictions"
             cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
             cv2.resizeWindow(window_name, width, height)
             cv2.imshow(window_name, annotated_frame)
@@ -255,4 +268,4 @@ class AdaptiveROI:
         # Release the video writer if it was created
         if out:
             out.release()
-            print(f"Video saved to: {predict_dir}")
+            print(f"Video saved to: {prediction_dir}")
