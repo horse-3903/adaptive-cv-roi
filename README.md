@@ -2,7 +2,7 @@
 
 This repository contains a Python-based system for automatic Region of Interest (ROI) detection in videos using the YOLOv11 model. It extracts specific frames from video, allows manual selection of ROI, formats the data, trains a model, and finally generates predictions on the video. The system is designed to be adaptive, allowing dynamic adjustments to the ROI based on custom inputs.
 
-[prediction.gif](https://github.com/horse-3903/adaptive-cv-roi/blob/main/prediction.gif)
+![prediction.gif](https://github.com/horse-3903/adaptive-cv-roi/blob/main/prediction.gif)
 
 ## Table of Contents
 - [Features](#features)
