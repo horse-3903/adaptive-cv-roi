@@ -1,16 +1,6 @@
 from main import AdaptiveROI
 
-def test_adaptive_roi(video_dir: str):
-    """
-    This function tests the AdaptiveROI class by executing its methods in the correct order.
-    
-    Parameters:
-    - video_dir: Path to the input video file.
-    - parent_dir: Directory where output (frames, annotations, trained models) will be saved.
-    - pre_trained_model: Path to a pre-trained YOLO model.
-    - trained_model_output: Directory where the trained YOLO model will be saved.
-    """
-    
+def test_adaptive_roi(video_dir: str):    
     # Initialize the AdaptiveROI class
     adaptive_roi = AdaptiveROI(video_dir=video_dir)
     

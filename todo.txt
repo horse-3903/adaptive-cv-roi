@@ -1,7 +1,7 @@
 todo list
-[ ] add function that increments on filename defaulting 
-[ ] add above function to parent, model, prediction
-[ ] make training data in a subdirectory of model-{index}
-[ ] add save function for every step of the way (checkpoint system for each function)
+[X] add function that increments on filename defaulting 
+[X] add above function to parent, model, prediction
+[X] make training data in a subdirectory of model-{index}
+[X] add save function for every step of the way (checkpoint system for each function)
 [ ] hyperparameter tuning (minimise epochs lol)
 [ ] try on 5 videos
